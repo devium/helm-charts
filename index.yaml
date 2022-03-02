@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  workadventure:
+  - apiVersion: v2
+    appVersion: v1.1.0
+    created: "2022-03-02T16:23:15.294505235Z"
+    description: A Helm chart for Kubernetes
+    digest: fee5ad2cc4fb0d58013dd42744b7abd714bd48abb45eb1256734a4bf3d66e1b0
+    name: workadventure
+    type: application
+    urls:
+    - https://github.com/devium/helm-charts/releases/download/workadventure-0.1.0/workadventure-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-03-02T16:23:15.294509735Z"
