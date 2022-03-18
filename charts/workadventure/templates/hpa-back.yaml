@@ -1,6 +1,6 @@
 {{- if .Values.back.autoscaling.enabled }}
 {{- $name := include "workadventure.back.name" . -}}
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ $name}}
@@ -18,12 +18,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.back.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.back.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
     {{- if .Values.back.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.back.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.back.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}

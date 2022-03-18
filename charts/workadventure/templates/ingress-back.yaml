@@ -1,4 +1,4 @@
-{{- if .Values.back.ingress.enabled -}}
+{{- if .Values.ingress.enabled -}}
 {{- $svcPort := .Values.back.service.port -}}
 {{- $name := include "workadventure.back.name" . -}}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -13,26 +13,26 @@ metadata:
   name: {{ $name }}
   labels:
     {{- include "workadventure.labels" . | nindent 4 }}
-  {{- with .Values.back.ingress.annotations }}
+  {{- with merge .Values.ingress.annotations .Values.back.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.back.ingress.tls }}
-  tls:
-    {{- range .Values.back.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}        
-        {{ $fqdn := printf "%s.%s" . $.Values.domain -}}
-        - {{ $fqdn }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
   rules:
-    {{- range .Values.back.ingress.hosts }}
-    {{ $fqdn := printf "%s.%s" .host $.Values.domain -}}
-    - host: {{ $fqdn }}
+    {{- if not .Values.back.ingress.rules }}
+    - host: {{ printf "%s.%s" $.Values.back.subdomain $.Values.domain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $name }}
+                port:
+                  number: {{ $svcPort }}
+    {{- end }}
+    {{- range .Values.back.ingress.rules }}
+    - host: {{ .host | quote }}
       http:
         paths:
         {{- range .paths }}
@@ -43,6 +43,19 @@ spec:
                 name: {{ $name }}
                 port:
                   number: {{ $svcPort }}
-          {{- end }}
-      {{- end }}
-{{- end }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.back.ingress.tls }}
+  tls:
+    {{- range .Values.back.ingress.tls }}
+    - hosts:
+        {{- if not .hosts }}
+        - {{ printf "%s.%s" $.Values.back.subdomain $.Values.domain }}
+        {{- end }}
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}

@@ -1,6 +1,6 @@
 {{- if .Values.maps.autoscaling.enabled }}
 {{- $name := include "workadventure.maps.name" . -}}
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ $name }}
@@ -18,12 +18,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.maps.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.maps.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
     {{- if .Values.maps.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.maps.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.maps.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}

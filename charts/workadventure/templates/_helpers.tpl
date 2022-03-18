@@ -65,51 +65,51 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Back object names
 */}}
 {{- define "workadventure.back.name" -}}
-{{- printf "%s-%s" (include "workadventure.fullname" .) .Values.back.name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" (include "workadventure.fullname" .) "back" }}
 {{- end }}
 
 {{/*
 Front object names
 */}}
 {{- define "workadventure.front.name" -}}
-{{- printf "%s-%s" (include "workadventure.fullname" .) .Values.front.name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" (include "workadventure.fullname" .) "front" }}
 {{- end }}
 
 {{/*
 Pusher object names
 */}}
 {{- define "workadventure.pusher.name" -}}
-{{- printf "%s-%s" (include "workadventure.fullname" .) .Values.pusher.name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" (include "workadventure.fullname" .) "pusher" }}
 {{- end }}
 
 {{/*
 Uploader object names
 */}}
 {{- define "workadventure.uploader.name" -}}
-{{- printf "%s-%s" (include "workadventure.fullname" .) .Values.uploader.name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" (include "workadventure.fullname" .) "uploader" }}
 {{- end }}
 
 {{/*
 Maps object names
 */}}
 {{- define "workadventure.maps.name" -}}
-{{- printf "%s-%s" (include "workadventure.fullname" .) .Values.maps.name | trunc 63 | trimSuffix "-" }}
+{{- printf "%s-%s" (include "workadventure.fullname" .) "maps" }}
 {{- end }}
 
 {{- define "workadventure.mapsUrl" -}}
-{{- printf "%s.%s" .Values.maps.name .Values.domain }}
+{{- printf "%s.%s" .Values.maps.subdomain .Values.domain }}
 {{- end }}
 
 {{- define "workadventure.pusherUrl" -}}
-{{- printf "%s.%s" .Values.pusher.name .Values.domain }}
+{{- printf "//%s.%s" .Values.pusher.subdomain .Values.domain }}
 {{- end }}
 
 {{- define "workadventure.uploaderUrl" -}}
-{{- printf "%s.%s" .Values.uploader.name .Values.domain }}
+{{- printf "//%s.%s" .Values.uploader.subdomain .Values.domain }}
 {{- end }}
 
 {{- define "workadventure.pusher.apiUrl" -}}
-{{- printf "%s:%s" (include "workadventure.back.name" .) "50051" }}
+{{- printf "%s:%s" (tpl .Values.back.svcUrl $) "50051" }}
 {{- end }}
 
 {{- define "workadventure.startRoomUrl" -}}

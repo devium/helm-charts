@@ -1,6 +1,6 @@
 {{- if .Values.front.autoscaling.enabled }}
 {{- $name := include "workadventure.front.name" . -}}
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ $name }}
@@ -18,12 +18,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.front.autoscaling.targetCPUUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.front.autoscaling.targetCPUUtilizationPercentage }}
     {{- end }}
     {{- if .Values.front.autoscaling.targetMemoryUtilizationPercentage }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.front.autoscaling.targetMemoryUtilizationPercentage }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.front.autoscaling.targetMemoryUtilizationPercentage }}
     {{- end }}
 {{- end }}

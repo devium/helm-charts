@@ -14,4 +14,4 @@ spec:
       name: http
   selector:
     {{- include "workadventure.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/type: "{{ .Values.uploader.name }}"
+    app.kubernetes.io/type: uploader

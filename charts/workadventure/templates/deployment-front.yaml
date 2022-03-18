@@ -13,7 +13,7 @@ spec:
   selector:
     matchLabels:
       {{- include "workadventure.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/type: "{{ .Values.front.name }}"
+      app.kubernetes.io/type: front
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -22,7 +22,7 @@ spec:
       {{- end }}
       labels:
         {{- include "workadventure.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/type: "{{ .Values.front.name }}"
+        app.kubernetes.io/type: front
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -54,18 +54,18 @@ spec:
           env:
             - name: 'DEBUG_MODE'
               value: "{{- .Values.env.debugMode -}}"
-            - name: 'API_URL'
+            - name: 'JITSI_URL'
+              value: "{{- .Values.env.jitsiUrl -}}"
+            - name: 'JITSI_PRIVATE_MODE'
+              value: "{{- .Values.env.jitsiPrivateMode -}}"
+            - name: 'PUSHER_URL'
               value: {{ include "workadventure.pusherUrl" . }}
             - name: 'UPLOADER_URL'
               value: {{ include "workadventure.uploaderUrl" . }}
-            - name: 'ADMIN_URL'
-              value: "{{- .Values.domain -}}"
-            - name: 'JITSI_URL'
-              value: "{{- .Values.env.jitsiUrl -}}"
+            - name: 'MAPS_URL'
+              value: {{ include "workadventure.mapsUrl" .  }}
             - name: 'SECRET_JITSI_KEY'
               value: "{{- .Values.env.secretJitsiKey -}}"
-            - name: 'JITSI_PRIVATE_MODE'
-              value: "{{- .Values.env.jitsiPrivateMode -}}"
             - name: 'TURN_SERVER'
               value: "{{- .Values.front.env.turnServer -}}"
             - name: 'TURN_USER'

@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels:
       {{- include "workadventure.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/type: "{{ .Values.uploader.name }}"
+      app.kubernetes.io/type: uploader
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -21,7 +21,7 @@ spec:
       {{- end }}
       labels:
         {{- include "workadventure.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/type: "{{ .Values.uploader.name }}"
+        app.kubernetes.io/type: uploader
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

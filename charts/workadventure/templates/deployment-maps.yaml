@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels:
       {{- include "workadventure.selectorLabels" . | nindent 6 }}
-      app.kubernetes.io/type: "{{ .Values.maps.name }}"
+      app.kubernetes.io/type: maps
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -21,7 +21,7 @@ spec:
       {{- end }}
       labels:
         {{- include "workadventure.selectorLabels" . | nindent 8 }}
-        app.kubernetes.io/type: "{{ .Values.maps.name }}"
+        app.kubernetes.io/type: maps
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -56,6 +56,18 @@ spec:
               #TODO : ADMIN_API_URL
               #TODO : API_URL
             {{ toYaml .Values.maps.extraEnvs | nindent 12 }}
+          volumeMounts:
+            {{- with .Values.maps.volumeMounts }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+      initContainers:
+        {{- with .Values.maps.initContainers }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- with .Values.maps.volumes }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

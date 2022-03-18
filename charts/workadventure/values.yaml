@@ -11,6 +11,10 @@ image:
 
 domain: "workadventure.minikube"
 
+ingress:
+  enabled: true
+  annotations: {}
+
 # Env
 env:
   secretKey: "tempSecretKeyNeedsToChange"
@@ -21,57 +25,15 @@ env:
   jitsiPrivateMode: false
   debugMode: false
 
-#################### workadventure-back ####################
-back:
-  name: "back"
-  replicaCount: 2
-
-  image:
-    repository: "thecodingmachine/workadventure-back"
-    pullPolicy: IfNotPresent
-
-  # Env back
-  env: {}    
-
-  extraEnvs: 
-    - name: KEY
-      value: value
-
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
-
-  service:
-    type: ClusterIP
-    port: 80
-
-  ingress:
-    enabled: true
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: api # FQDN is computed with this and domain
-        paths: [/]
-    tls:
-      - secretName: back-tls      
-        hosts:
-          - api # FQDN is computed with this and domain
-#################### workadventure-back ####################
-
 #################### workadventure-front ####################
 front:
-  name: "front"
   replicaCount: 1
+  subdomain: play
 
   image:
     repository: "thecodingmachine/workadventure-front"
     pullPolicy: IfNotPresent
 
-  # Env front
   env:
     turnServer: "turn:coturn.workadventu.re:443,turns:coturn.workadventu.re:443"
     turnUser: "workadventure"
@@ -95,31 +57,68 @@ front:
     port: 80
 
   ingress:
-    enabled: true
-    annotations:
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: play
-        paths: [/]
+    annotations: {}
+  #   rules:
+  #     - host: front.example.com
+  #       paths:
+  #       - /
     tls:
       - secretName: front-tls
-        hosts:
-          - play
-  
+  #      hosts:
+  #        - front.example.com
+
 #################### workadventure-front ####################
+
+
+#################### workadventure-back ####################
+back:
+  replicaCount: 2
+  subdomain: api
+  svcUrl: '{{ .Release.Name }}-workadventure-back'
+
+  image:
+    repository: "thecodingmachine/workadventure-back"
+    pullPolicy: IfNotPresent
+
+  env: {}    
+
+  extraEnvs: 
+    - name: KEY
+      value: value
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    annotations: {}
+  #   rules:
+  #     - host: back.example.com
+  #       paths:
+  #       - /
+    tls:
+      - secretName: back-tls
+  #      hosts:
+  #        - back.example.com
+#################### workadventure-back ####################
 
 
 #################### workadventure-pusher ####################
 pusher:
-  name: "pusher"
   replicaCount: 2
+  subdomain: pusher
 
   image:
     repository: "thecodingmachine/workadventure-pusher"
     pullPolicy: IfNotPresent
 
-  # Env front
   env: {}
 
   extraEnvs: 
@@ -127,7 +126,7 @@ pusher:
       value: value
 
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
@@ -138,30 +137,27 @@ pusher:
     port: 80
 
   ingress:
-    enabled: true
-    annotations:
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: pusher
-        paths: [/]
+    annotations: {}
+  #   rules:
+  #     - host: pusher.example.com
+  #       paths:
+  #       - /
     tls:
       - secretName: pusher-tls
-        hosts:
-          - pusher  
+  #      hosts:
+  #        - pusher.example.com
 #################### workadventure-pusher ####################
 
 
 #################### workadventure-uploader ####################
 uploader:
-  name: "uploader"
   replicaCount: 2
+  subdomain: uploader
 
   image:
     repository: "thecodingmachine/workadventure-uploader"
     pullPolicy: IfNotPresent
 
-  # Env front
   env: {}
 
   extraEnvs: 
@@ -180,30 +176,51 @@ uploader:
     port: 80
 
   ingress:
-    enabled: true
-    annotations:
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: uploader
-        paths: [/]
+    annotations: {}
+  #   rules:
+  #     - host: uploader.example.com
+  #       paths:
+  #       - /
     tls:
       - secretName: uploader-tls
-        hosts:
-          - uploader
+  #      hosts:
+  #        - uploader.example.com
 #################### workadventure-uploader ####################
 
 
 #################### workadventure-maps ####################
 maps:
-  name: "maps"
   replicaCount: 2
+  subdomain: maps
 
   image:
     repository: "thecodingmachine/workadventure-maps"
     pullPolicy: IfNotPresent
 
-  # Env front
+  # volumes: |
+  #   - name: exampleVolume
+  #     emptyDir: {}
+
+  # volumeMounts: |
+  #   - name: exampleVolume
+  #     mountPath: /example
+
+  # initContainers: |
+  #   - name: exampleInitContainer
+  #     image: hub.example.com/initImage
+  #     imagePullPolicy: IfNotPresent
+
+  #     command:
+  #       - sh
+
+  #     args:
+  #       - -c
+  #       - cp -R /data/* /example/
+
+  #     volumeMounts:
+  #       - name: exampleVolume
+  #         mountPath: /example
+
   env: {}
 
   extraEnvs: 
@@ -222,17 +239,15 @@ maps:
     port: 80
 
   ingress:
-    enabled: true
-    annotations:
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: maps
-        paths: [/]
+    annotations: {}
+  #   rules:
+  #     - host: maps.example.com
+  #       paths:
+  #       - /
     tls:
       - secretName: maps-tls
-        hosts:
-          - maps 
+  #      hosts:
+  #        - maps.example.com
 #################### workadventure-maps ####################
 
 serviceAccount:
